@@ -6,6 +6,7 @@ const Comment = require("../database/schema/commentSchema");
 const Like = require("../database/schema/likeSchema");
 const User = require("../database/schema/userSchema");
 const Rating = require("../database/schema/ratingSchema");
+const { default: mongoose } = require("mongoose");
 
 async function blogImgMulterUpload(req, res, next) {
   try {
@@ -113,7 +114,8 @@ async function getAllBlogs(req, res) {
       .populate("author", "name")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 });
     const count = await Blog.countDocuments();
     res.json({
       status: "success",
@@ -137,28 +139,28 @@ async function getAllBlogs(req, res) {
 
 async function getBlogById(req, res) {
   try {
-    const blog = await Blog.findById(req.params.id).populate("author", "name");
-    const comments = await Comment.find({ blog: req.params.id })
+    const id = mongoose.Types.ObjectId(req.params.id);
+    const blog = await Blog.findById(id).populate("author", "name");
+    const comments = await Comment.find({ blog: id })
       .populate("user", "name")
       .sort({ createdAt: -1 });
-    const ratings = await Rating.find({ blog: req.params.id })
+    const ratings = await Rating.find({ blog: id })
       .populate("user", "name")
       .sort({ createdAt: -1 });
-    const likes = await Like.find({ blog: req.params.id })
+    const likes = await Like.find({ blog: id })
       .populate("user", "name")
       .sort({ createdAt: -1 });
     //average rating calculation with only one digit after decimal
-    const avgrating = (
-      await Rating.aggregate([
-        { $match: { blog: blog._id } },
-        {
-          $group: {
-            _id: "$blog",
-            avgRating: { $avg: "$rating" },
-          },
-        },
-      ])
-    )[0].avgRating.toFixed(1);
+    //calculate average rating
+    let avgrating = 0;
+    if (ratings.length > 0) {
+      let sum = 0;
+      for (let i = 0; i < ratings.length; i++) {
+        sum += ratings[i].rating;
+      }
+      avgrating = sum / ratings.length;
+      avgrating = avgrating.toFixed(1);
+    }
 
     const blogData = {
       ...blog._doc,
@@ -183,10 +185,38 @@ async function getBlogById(req, res) {
   }
 }
 
+//delete blog by blog id and author id and delete all comments,ratings and likes related to that blog
+async function deleteBlog(req, res) {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (blog.author == req.user._id) {
+      await Blog.findByIdAndDelete(req.params.id);
+      await Comment.deleteMany({ blog: req.params.id });
+      await Rating.deleteMany({ blog: req.params.id });
+      await Like.deleteMany({ blog: req.params.id });
+      res.json({
+        status: "success",
+        message: "Blog deleted successfully!",
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "You are not authorized to delete this blog!",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "error",
+      message: "Blog deletion failed!",
+    });
+  }
+}
 module.exports = {
   blogImgMulterUpload,
   blogCloudinaryUploader,
   createBlog,
   getAllBlogs,
   getBlogById,
+  deleteBlog,
 };

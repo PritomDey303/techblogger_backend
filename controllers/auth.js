@@ -10,11 +10,11 @@ const signup = async (req, res) => {
     const existingUser = await User.find({
       $or: [{ email: email }, { username: username }, { mobile: mobile }],
     });
-    console.log(existingUser);
+
     if (existingUser.length > 0) {
       return res.json({
         status: "error",
-        error: "User already exists",
+        message: "User already exists",
       });
     }
 
@@ -26,21 +26,13 @@ const signup = async (req, res) => {
       mobile,
       password: newPassword,
     });
-    const userJwtObj = {
-      username: username,
-      name: name,
-      email: email,
-      mobile: mobile,
-      password: newPassword,
-    };
-    const token = jwt.sign(userJwtObj, process.env.JWT_SECRET);
-    console.log(token);
-    res.json({ status: 200, message: "User created successfully" });
+
+    res.json({ status: "success", message: "You are registered successfully" });
   } catch (error) {
-    // console.log(error);
+    console.log(error.message);
     res.json({
       status: "error",
-      error: "Sorry! Something went wrong.",
+      message: "Sorry! Something went wrong.",
     });
   }
 };
@@ -90,4 +82,20 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, logout };
+//keep user logged in
+const keepUserLoggedIn = async (req, res) => {
+  try {
+    //return user details if token is valid
+    res.json({
+      status: "success",
+      message: "User is logged in",
+      user: req.user,
+    });
+  } catch (error) {
+    // Handle any errors
+    //console.error(error);
+    res.json({ status: "error", message: "Internal server error" });
+  }
+};
+
+module.exports = { signup, login, logout, keepUserLoggedIn };

@@ -6,6 +6,7 @@ const {
   createBlog,
   getAllBlogs,
   getBlogById,
+  deleteBlog,
 } = require("../controllers/blog");
 const router = express.Router();
 
@@ -23,4 +24,6 @@ router.get("/", getAllBlogs);
 
 //get blog by id
 router.get("/:id", getBlogById);
+//delete blog by id
+router.delete("/delete/:id", checkLogin, deleteBlog);
 module.exports = router;

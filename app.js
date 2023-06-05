@@ -1,12 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./database/database");
 const port = 5000;
 const User = require("./database/schema/userSchema");
 const authRoute = require("./routes/authRoute");
 dotenv.config();
+
+//cors middleware allowing all requests
+app.use(cors());
 
 // Connect to MongoDB
 connectDB(process.env.MONGO_URI, process.env.DB_NAME);
