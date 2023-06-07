@@ -138,6 +138,7 @@ async function getAllBlogs(req, res) {
 //get blog by id with author details,comments,ratings and likes
 
 async function getBlogById(req, res) {
+  console.log(req.params.id + "blog id");
   try {
     const id = mongoose.Types.ObjectId(req.params.id);
     const blog = await Blog.findById(id).populate("author", "name");

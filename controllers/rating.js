@@ -34,6 +34,38 @@ async function createRating(req, res) {
   }
 }
 
+//rating check
+async function checkRating(req, res) {
+  //console.log(req.params.id);
+  try {
+    const rating = await Rating.findOne({
+      user: req.user._id,
+      blog: req.params.id,
+    });
+
+    if (rating) {
+      res.json({
+        status: "success",
+        message: "Rating found!",
+        rating: rating.rating,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "Rating not found!",
+        rating: 0,
+      });
+    }
+  } catch (error) {
+    console.log(error.message + "checkRating");
+    res.json({
+      status: "error",
+      message: "Sorry! Something went wrong.",
+    });
+  }
+}
+
 module.exports = {
   createRating,
+  checkRating,
 };

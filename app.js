@@ -10,6 +10,7 @@ const authRoute = require("./routes/authRoute");
 dotenv.config();
 
 //cors middleware allowing all requests
+// Middleware to handle CORS headers
 app.use(cors());
 
 // Connect to MongoDB

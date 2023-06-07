@@ -36,6 +36,37 @@ async function createLike(req, res) {
   }
 }
 
+//like check
+async function checkLike(req, res) {
+  try {
+    const like = await Like.findOne({
+      user: req.user._id,
+      blog: req.params.id,
+    });
+
+    if (like) {
+      res.json({
+        status: "success",
+        message: "Like found!",
+        like: true,
+      });
+    } else {
+      res.json({
+        status: "success",
+        message: "Like not found!",
+        like: false,
+      });
+    }
+  } catch (error) {
+    console.log(error.message + "checkLike");
+    res.json({
+      status: "error",
+      message: "Sorry! Something went wrong.",
+    });
+  }
+}
+
 module.exports = {
   createLike,
+  checkLike,
 };
