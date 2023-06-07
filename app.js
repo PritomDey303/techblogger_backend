@@ -23,6 +23,9 @@ app.use((req, res, next) => {
   next();
 });
 //Routing Middleware
+app.get("/", (req, res) => {
+  res.send("Hello Users! Welcome to Blogging Application");
+});
 app.use("/api/auth", authRoute);
 app.use("/api/blog", require("./routes/blogRoute"));
 app.use("/api/comment", require("./routes/commentRoute"));
