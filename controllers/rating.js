@@ -5,7 +5,7 @@ async function createRating(req, res) {
   try {
     const rating = await Rating.findOne({
       user: req.user._id,
-      blog: req.body.blogId,
+      blog: req.body.blogid,
     });
 
     if (rating) {
@@ -15,7 +15,7 @@ async function createRating(req, res) {
       const rating = new Rating({
         rating: req.body.rating,
         user: req.user._id,
-        blog: req.body.blogId,
+        blog: req.body.blogid,
       });
 
       await rating.save();

@@ -5,7 +5,7 @@ async function createLike(req, res) {
   try {
     const like = await Like.findOne({
       user: req.user._id,
-      blog: req.body.blogId,
+      blog: req.body.blogid,
     });
 
     if (like) {
@@ -17,7 +17,7 @@ async function createLike(req, res) {
     } else {
       const like = new Like({
         user: req.user._id,
-        blog: req.body.blogId,
+        blog: req.body.blogid,
       });
 
       await like.save();

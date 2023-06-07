@@ -5,7 +5,7 @@ async function createComment(req, res) {
     const comment = new Comment({
       comment: req.body.comment,
       user: req.user._id,
-      blog: req.body.blogId,
+      blog: req.body.blogid,
     });
 
     await comment.save();
