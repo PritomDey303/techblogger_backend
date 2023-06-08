@@ -25,6 +25,9 @@ class CloudinaryUploader {
       );
     });
   }
+
+  //upload buffer image to cloudinary
+
   async deleteImages(urls) {
     urls.map((url) => {
       cloudinary.uploader.destroy(url.public_id);

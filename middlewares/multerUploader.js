@@ -12,23 +12,10 @@ async function uploader(
   // File upload folder
   const UPLOADS_FOLDER = `${__dirname}/../public/uploads/${subfolder_path}/`;
 
-  // define the storage
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
+  // define the memory storage instead of diskstorage
+  const storage = multer.memoryStorage({
+    destination: function (req, file, cb) {
       cb(null, UPLOADS_FOLDER);
-    },
-    filename: (req, file, cb) => {
-      const fileExt = path.extname(file.originalname);
-      const fileName =
-        file.originalname
-          .replace(fileExt, "")
-          .toLowerCase()
-          .split(" ")
-          .join("-") +
-        "-" +
-        Date.now();
-
-      cb(null, fileName + fileExt);
     },
   });
 

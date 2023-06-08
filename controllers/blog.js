@@ -7,6 +7,7 @@ const Like = require("../database/schema/likeSchema");
 const User = require("../database/schema/userSchema");
 const Rating = require("../database/schema/ratingSchema");
 const { default: mongoose } = require("mongoose");
+const cloudinary = require("cloudinary");
 
 async function blogImgMulterUpload(req, res, next) {
   try {
@@ -40,38 +41,36 @@ async function blogImgMulterUpload(req, res, next) {
 //cloudinary uploader
 
 async function blogCloudinaryUploader(req, res, next) {
-  console.log("event image cloudinary upload");
   try {
     const uploader = new CloudinaryUploader();
     if (req.method === "POST") {
       const urls = [];
+      console.log(req.files);
+      const tempFilePath = "./temp.jpg";
+      fs.writeFileSync(tempFilePath, req.files[0].buffer);
 
-      for (let file of req.files) {
-        const { path } = file;
-        const newPath = await uploader.uploadImage(
-          path,
-          "techblogger/blogImgs"
-        );
-        console.log(newPath);
-        urls.push(newPath);
-        fs.unlinkSync(path);
-      }
-      // console.log(urls);
+      const result = await uploader.uploadImage(
+        tempFilePath,
+        "techblogger/blogImgs"
+      );
+      urls.push(result);
       req.blogImgs = urls;
+      fs.unlinkSync(tempFilePath);
 
       next();
     } else {
+      fs.unlinkSync(tempFilePath);
       res.json({
         status: "error",
         message: "Images not uploaded successfully.",
       });
     }
   } catch (err) {
-    console.log("error");
-    for (let file of req.files) {
-      const { path } = file;
-      fs.unlinkSync(path);
-    }
+    console.log(err.message);
+    // for (let file of req.files) {
+    //   const { path } = file;
+    //   fs.unlinkSync(path);
+    //}
     res.json({
       status: "error",
       message: err.message,
