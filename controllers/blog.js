@@ -81,13 +81,14 @@ async function blogCloudinaryUploader(req, res, next) {
 //create blog
 async function createBlog(req, res) {
   try {
-    const { title, description, category } = req.body;
+    const { title, description, category, image_url } = req.body;
+    console.log(req.body);
     const blog = new Blog({
       title,
       description,
       category,
       author: req.user._id,
-      image_url: req.blogImgs[0].url,
+      image_url: image_url,
     });
     const newBlog = await blog.save();
     res.json({
@@ -96,7 +97,7 @@ async function createBlog(req, res) {
       data: newBlog,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.json({
       status: "error",
       message: "Blog creation failed!",
@@ -137,7 +138,7 @@ async function getAllBlogs(req, res) {
 //get blog by id with author details,comments,ratings and likes
 
 async function getBlogById(req, res) {
-  console.log(req.params.id + "blog id");
+  //console.log(req.params.id + "blog id");
   try {
     const id = mongoose.Types.ObjectId(req.params.id);
     const blog = await Blog.findById(id).populate("author", "name");
@@ -187,9 +188,13 @@ async function getBlogById(req, res) {
 
 //delete blog by blog id and author id and delete all comments,ratings and likes related to that blog
 async function deleteBlog(req, res) {
+  //console.log(req.params);
   try {
-    const blog = await Blog.findById(req.params.id);
-    if (blog.author == req.user._id) {
+    const id = mongoose.Types.ObjectId(req.params.id);
+
+    const blog = await Blog.find({ _id: id, author: req.user._id });
+
+    if (blog.length > 0) {
       await Blog.findByIdAndDelete(req.params.id);
       await Comment.deleteMany({ blog: req.params.id });
       await Rating.deleteMany({ blog: req.params.id });
@@ -205,13 +210,34 @@ async function deleteBlog(req, res) {
       });
     }
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.json({
       status: "error",
       message: "Blog deletion failed!",
     });
   }
 }
+
+//get all blogs on the basis of login user's id
+async function getAllBlogsByUserId(req, res) {
+  try {
+    const blogs = await Blog.find({ author: req.user._id }).sort({
+      createdAt: -1,
+    });
+    res.json({
+      status: "success",
+      message: "Blogs fetched successfully!",
+      data: blogs,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.json({
+      status: "error",
+      message: "Blogs fetch failed!",
+    });
+  }
+}
+
 module.exports = {
   blogImgMulterUpload,
   blogCloudinaryUploader,
@@ -219,4 +245,5 @@ module.exports = {
   getAllBlogs,
   getBlogById,
   deleteBlog,
+  getAllBlogsByUserId,
 };

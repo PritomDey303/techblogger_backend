@@ -1,12 +1,11 @@
 const express = require("express");
 const checkLogin = require("../middlewares/checkLogin");
 const {
-  blogImgMulterUpload,
-  blogCloudinaryUploader,
   createBlog,
   getAllBlogs,
   getBlogById,
   deleteBlog,
+  getAllBlogsByUserId,
 } = require("../controllers/blog");
 const router = express.Router();
 
@@ -14,8 +13,7 @@ const router = express.Router();
 router.post(
   "/create",
   checkLogin,
-  blogImgMulterUpload,
-  blogCloudinaryUploader,
+
   createBlog
 );
 
@@ -24,6 +22,8 @@ router.get("/", getAllBlogs);
 
 //get blog by id
 router.get("/:id", getBlogById);
+//get blog by userid
+router.get("/user/data", checkLogin, getAllBlogsByUserId);
 //delete blog by id
 router.delete("/delete/:id", checkLogin, deleteBlog);
 module.exports = router;

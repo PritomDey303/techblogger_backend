@@ -12,6 +12,8 @@ dotenv.config();
 //cors middleware allowing all requests
 // Middleware to handle CORS headers
 app.use(cors());
+//json body parser middleware
+app.use(express.json());
 
 // Connect to MongoDB
 connectDB(process.env.MONGO_URI, process.env.DB_NAME);
