@@ -104,12 +104,31 @@ async function createBlog(req, res) {
     });
   }
 }
+//get total blogs count
+
+async function getTotalBlogsCount(req, res) {
+  try {
+    const count = await Blog.countDocuments();
+    res.json({
+      status: "success",
+      message: "Total blogs count fetched successfully!",
+      data: count,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "error",
+      message: "Total blogs count fetch failed!",
+    });
+  }
+}
 
 //////////////////////////////////////
 //get all blogs data for home page with load more functionality
 async function getAllBlogs(req, res) {
   try {
     const { page, limit } = req.query;
+    console.log(page, limit);
     const blogs = await Blog.find()
       .populate("author", "name")
       .sort({ createdAt: -1 })
@@ -245,5 +264,6 @@ module.exports = {
   getAllBlogs,
   getBlogById,
   deleteBlog,
+  getTotalBlogsCount,
   getAllBlogsByUserId,
 };

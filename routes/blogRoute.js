@@ -6,6 +6,7 @@ const {
   getBlogById,
   deleteBlog,
   getAllBlogsByUserId,
+  getTotalBlogsCount,
 } = require("../controllers/blog");
 const router = express.Router();
 
@@ -26,4 +27,8 @@ router.get("/:id", getBlogById);
 router.get("/user/data", checkLogin, getAllBlogsByUserId);
 //delete blog by id
 router.delete("/delete/:id", checkLogin, deleteBlog);
+
+//get total blogs count
+router.get("/total/count", getTotalBlogsCount);
+
 module.exports = router;
