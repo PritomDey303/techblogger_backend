@@ -275,6 +275,36 @@ async function getAllBlogsByUserId(req, res) {
   }
 }
 
+//get all blogs on the basis of category sorted by date and paginated
+async function getAllBlogsByCategory(req, res) {
+  try {
+    console.log(req.params.category);
+    const { page, limit } = req.query;
+    const blogs = await Blog.find({ category: req.params.category })
+      .populate("author", "name")
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 });
+    const count = await Blog.countDocuments();
+    res.json({
+      status: "success",
+      message: "Blogs fetched successfully!",
+      data: {
+        blogs,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+      },
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.json({
+      status: "error",
+      message: "Blogs fetch failed!",
+    });
+  }
+}
+
 module.exports = {
   blogImgMulterUpload,
   blogCloudinaryUploader,
@@ -284,4 +314,5 @@ module.exports = {
   deleteBlog,
   getTotalBlogsCount,
   getAllBlogsByUserId,
+  getAllBlogsByCategory,
 };
