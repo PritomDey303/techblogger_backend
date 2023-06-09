@@ -128,13 +128,31 @@ async function getTotalBlogsCount(req, res) {
 async function getAllBlogs(req, res) {
   try {
     const { page, limit } = req.query;
-    console.log(page, limit);
-    const blogs = await Blog.find()
-      .populate("author", "name")
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .sort({ createdAt: -1 });
+
+    // console.log(req.query.date);
+    let blogs = "[]";
+    //find by date if date is given
+    if (req.query.date) {
+      blogs = await Blog.find({
+        createdAt: {
+          $gte: new Date(req.query.date),
+        },
+      })
+        .populate("author", "name")
+        .sort({ createdAt: -1 })
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .sort({ createdAt: -1 });
+    } else {
+      blogs = await Blog.find()
+        .populate("author", "name")
+        .sort({ createdAt: -1 })
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .sort({ createdAt: -1 });
+    }
+
+    //console.log(blogs);
     const count = await Blog.countDocuments();
     res.json({
       status: "success",
