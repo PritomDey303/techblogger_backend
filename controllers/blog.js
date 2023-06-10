@@ -286,7 +286,8 @@ async function getAllBlogsByCategory(req, res) {
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .sort({ createdAt: -1 });
-    const count = await Blog.countDocuments();
+    //find total count of blogs in that category
+    const count = await Blog.countDocuments({ category: req.params.category });
     res.json({
       status: "success",
       message: "Blogs fetched successfully!",
