@@ -9,14 +9,14 @@ const User = require("./database/schema/userSchema");
 const authRoute = require("./routes/authRoute");
 dotenv.config();
 
-//cors middleware allowing all requests
-// Allow specific origin
+
+// Allow requests from your frontend origin
 app.use(cors({
-  origin: 'https://techbloggers.netlify.app' // Replace with the frontend URL
+  origin: 'https://techbloggers.netlify.app', // Replace with your frontend URL
+  methods: 'GET, POST, PUT, DELETE',
+  allowedHeaders: 'Content-Type, Authorization'
 }));
 
-// Middleware to handle CORS headers
-app.use(cors());
 //json body parser middleware
 app.use(express.json());
 
