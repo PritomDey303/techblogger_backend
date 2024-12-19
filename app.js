@@ -10,6 +10,11 @@ const authRoute = require("./routes/authRoute");
 dotenv.config();
 
 //cors middleware allowing all requests
+// Allow specific origin
+app.use(cors({
+  origin: 'https://techbloggers.netlify.app' // Replace with the frontend URL
+}));
+
 // Middleware to handle CORS headers
 app.use(cors());
 //json body parser middleware
