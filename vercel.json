@@ -8,7 +8,11 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "https://techblogger-backend-git-main-pritomdey303.vercel.app", 
+      "dest": "https://techblogger-backend.vercel.app" 
+    },
+    {
+      "src": "/(.*)",  
       "dest": "app.js"
     }
   ]
